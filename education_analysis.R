@@ -138,6 +138,29 @@ education_trends <- combined_data %>%
 
 print(education_trends)
 
+
+# Calculate average percentages for each gender by year and locality
+mean_gender_percents <- combined_data %>%
+  group_by(Year, Locality) %>%
+  summarise(
+    Mean_Male = mean(Male),
+    Mean_Female = mean(Female),
+    .groups = "drop"
+  ) %>%
+  pivot_longer(cols = starts_with("Mean"), names_to = "Gender", values_to = "Mean_Percentage") %>%
+  mutate(Gender = recode(Gender, "Mean_Male" = "Male", "Mean_Female" = "Female"))
+
+# Plot
+ggplot(mean_gender_percents, aes(x = Locality, y = Mean_Percentage, fill = Gender)) +
+  geom_col(position = position_dodge()) +
+  facet_wrap(~Year) +
+  labs(title = "Average Educational Attainment by Gender",
+       x = "Locality", y = "Average Percentage (%)") +
+  scale_fill_brewer(palette = "Set1") +
+  theme_minimal()
+
+
+
 # 5. Key Findings Summary -------------------------------------------------
 
 cat("\nKey Findings:\n")
